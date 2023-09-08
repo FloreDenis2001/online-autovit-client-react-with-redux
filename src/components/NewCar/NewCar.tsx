@@ -5,7 +5,9 @@ import { Alert, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { successNotification,errorNotification } from '../Notifications/notifications';
 import { setConstantValue } from 'typescript';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { selectAddCarsState, selectCars } from '../../store/cars/cars.selectors';
+import { addMasina, addMasinaError, addMasinaLoading, addMasinaSucces, retriveMasiniSucces } from '../../store/cars/cars.reducers';
 const NewCar: React.FC = () => {
 
     let serviceCar = new ServiceCar();
@@ -13,56 +15,41 @@ const NewCar: React.FC = () => {
     const [model, setModel] = useState("");
     const [culoare, setCuloare] = useState("");
     const [anul, setAnul] = useState(0);
-
-
     const [errors, setErrors] = useState([""])
-
-
     const [isAdded, setAdded] = useState(false);
     let navigate = useNavigate();
-
-
+    let dispatch=useDispatch();
+    let masini= useSelector(selectCars);
+    let addCarState=useSelector(selectAddCarsState);
     const [car, setCar] = useState({
         an: 1864,
         culoare: "",
         marca: "",
         model: ""
     } as Masina);
-
-
     let addCar = async () => {
-
-        checkErros();
-
-
+        checkErros();  
+        try{
         if(errors.length==0){
-
+        dispatch(addMasinaLoading());
         await serviceCar.addCar(car);
         setAdded(true);
+        dispatch(addMasina(car));
+        dispatch(addMasinaSucces());
         setTimeout(() => {
             navigate("/")
         }, 2500);
-
-
             successNotification("A fost adaugat","masina","topRight");
-
         }else{
-
-
             errors.forEach((err)=>{
-
-
+               
                 errorNotification(err,"eroare","topRight");
 
             })
+        }}catch{
+            dispatch(addMasinaError());
         }
-
-
     }
-
-
-
-
     let checkErros = () => {
 
         let messages = [];
@@ -85,11 +72,7 @@ const NewCar: React.FC = () => {
 
         setErrors(messages);
     }
-
-
-
     useEffect(() => {
-
         checkErros();
         let masina = {
             an: anul,
@@ -99,18 +82,12 @@ const NewCar: React.FC = () => {
         } as Masina;
         setCar(masina);
         console.table(car);
-
-
     }, [marca, model, culoare, anul]);
 
-   
     let goHome = (): void => {
         navigate("/");
     }
-
-
     return (
-
         <>
             <h1>New Car</h1>
             <form>
@@ -138,7 +115,6 @@ const NewCar: React.FC = () => {
                         setAnul(+e.target.value);
                     }} />
                 </p>
-
                 <p>
                     <input type="button" value="Create New Car" onClick={addCar} />
                 </p>

@@ -6,12 +6,14 @@ import Masina from "../../models/Masina"
 import ServiceCar from "../../services/Api"
 import { Alert } from 'antd';
 import { successNotification,errorNotification } from '../Notifications/notifications';
+import { useDispatch } from 'react-redux';
+import { deleteMasina } from '../../store/cars/cars.reducers';
 
 
 const UpdateCar = () => {
 
     let serviceCar = new ServiceCar();
-
+    let dispatch=useDispatch();
     const [marca, setMarca] = useState("");
     const [culoare, setCuloare] = useState("");
     const [anul, setAnul] = useState(1864);
@@ -90,6 +92,7 @@ const UpdateCar = () => {
     let deleteCar = async () => {
 
         let res = await serviceCar.deleteCar(car);
+        dispatch(deleteMasina(car));
         if (res != null) {
         }
 
