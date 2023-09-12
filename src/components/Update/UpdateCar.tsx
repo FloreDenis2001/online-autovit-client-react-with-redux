@@ -81,7 +81,6 @@ const UpdateCar = () => {
             navigate("/");
         }, 2500)
 
-        successNotification("Updated","masina","topRight");
         }else {
             errors.forEach((err)=>{
                 errorNotification(err,"erroare","topRight");
